@@ -4,9 +4,11 @@
 
 A little touch-control server for Hyprland — runs on an Arch box and talks to
 Hyprland, PipeWire, playerctl, and brightnessctl, then serves a touch UI over
-your LAN so another can act as a physical deck for your desktop: switch 
+your LAN so any device can act as a physical deck for your desktop: switch 
 workspaces, focus windows, control volume/brightness/media,
 and launch apps.
+
+Yes it works on every new browser
 
 Vibecoded on a weekend because having a taskbar felt like too much. Expect rough edges.
 
