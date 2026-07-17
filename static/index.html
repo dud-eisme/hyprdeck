@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="deck" />
+<title>hypr // deck</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="frame">
+
+  <header class="topbar">
+    <div class="brand">joe<span class="accent">::</span>deck</div>
+    <div class="clock" id="clock">--:--</div>
+    <div class="conn" id="conn" aria-label="Toggle Fullscreen">
+      <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+    </div>
+  </header>
+
+<main class="grid">
+
+    <!-- Brightness (Left Side) -->
+    <section class="panel vertical-slider-panel brightness">
+      <div class="slider-wrapper">
+        <input type="range" min="1" max="100" value="50" id="brightSlider" class="slider vertical" />
+      </div>
+      <div class="slider-value" id="brightValue">50</div>
+      <div class="btn round small static">
+        <svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 100 10 5 5 0 000-10zM12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      </div>
+    </section>
+
+    <!-- Workspaces (Top Middle) -->
+    <section class="panel workspaces">
+      <h2>workspaces</h2>
+      <div class="ws-grid" id="wsGrid"></div>
+    </section>
+
+    <!-- Media (Bottom Middle-Left) -->
+    <section class="panel media">
+      <h2>now playing</h2>
+      <div class="track">
+        <img id="trackArt" class="track-art" src="" alt="" style="display: none;" />
+        <div class="track-info">
+          <div class="track-title" id="trackTitle">nothing playing</div>
+          <div class="track-artist" id="trackArtist">&nbsp;</div>
+        </div>
+      </div>
+      <div class="media-controls">
+        <button class="btn round" id="prevBtn" aria-label="previous">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM20 6L10 12l10 6z"/></svg>
+        </button>
+        <button class="btn round primary" id="playBtn" aria-label="play/pause">
+          <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn round" id="nextBtn" aria-label="next">
+          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM4 6l10 6-10 6z"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel suggestions">
+      <h2>system</h2>
+      <div class="stat-row">
+        <span class="stat-label">CPU</span>
+        <div class="stat-bar"><div class="stat-fill" id="cpuFill"></div></div>
+        <span class="stat-value" id="cpuValue">--</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">RAM</span>
+        <div class="stat-bar"><div class="stat-fill" id="memFill"></div></div>
+        <span class="stat-value" id="memValue">--</span>
+      </div>
+      <div class="stat-row" id="gpuRow" style="display:none;">
+        <span class="stat-label">GPU</span>
+        <div class="stat-bar"><div class="stat-fill" id="gpuFill"></div></div>
+        <span class="stat-value" id="gpuValue">--</span>
+      </div>
+    
+      <h2>launch</h2>
+      <div class="launch-grid" id="launchGrid">
+        <button class="launch-btn" data-app="wireshark">
+          <img class="launch-icon" src="https://cdn.jsdelivr.net/npm/simple-icons@11/icons/wireshark.svg" alt="" />
+          <span>wireshark</span>
+        </button>
+        <button class="launch-btn" data-app="ghidra">
+          <img class="launch-icon" src="https://cdn.jsdelivr.net/npm/simple-icons@11/icons/ghidra.svg" alt="" />
+          <span>ghidra</span>
+        </button>
+        <button class="launch-btn" data-app="audacity">
+          <img class="launch-icon" src="https://cdn.jsdelivr.net/npm/simple-icons@11/icons/audacity.svg" alt="" />
+          <span>audacity</span>
+        </button>
+        <button class="launch-btn" data-app="virt-manager">
+          <img class="launch-icon" src="https://cdn.jsdelivr.net/npm/simple-icons@11/icons/kvm.svg" alt="" />
+          <span>virt mgr</span>
+        </button>
+        <button class="launch-btn" data-app="filemanager">
+          <img class="launch-icon" src="https://cdn.jsdelivr.net/npm/simple-icons@11/icons/kde.svg" alt="" />
+          <span>files</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Volume (Right Side) -->
+    <section class="panel vertical-slider-panel volume">
+      <div class="slider-wrapper">
+        <input type="range" min="0" max="100" value="0" id="volSlider" class="slider vertical" />
+      </div>
+      <div class="slider-value" id="volValue">0</div>
+      <button class="btn round small" id="muteBtn" aria-label="mute">
+        <svg id="volIcon" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+      </button>
+    </section>
+
+  </main>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

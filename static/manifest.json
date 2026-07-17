@@ -1,0 +1,9 @@
+{
+  "name": "hypr::deck",
+  "short_name": "deck",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "start_url": "/",
+  "background_color": "#0a0c0d",
+  "theme_color": "#0a0c0d"
+}
