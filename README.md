@@ -8,7 +8,7 @@ your LAN so an iPad (or any tablet/phone) can act as a physical deck for your
 desktop: switch workspaces, focus windows, control volume/brightness/media,
 and launch apps.
 
-Vibecoded on a weekend because clicking through a taskbar felt like too much
+Vibecoded on a weekend because having a taskbar felt like too much
 effort. Expect rough edges.
 
 ## Usage
