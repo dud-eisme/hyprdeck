@@ -4,8 +4,8 @@
 
 A little touch-control server for Hyprland — runs on an Arch box and talks to
 Hyprland, PipeWire, playerctl, and brightnessctl, then serves a touch UI over
-your LAN so an iPad (or any tablet/phone) can act as a physical deck for your
-desktop: switch workspaces, focus windows, control volume/brightness/media,
+your LAN so another can act as a physical deck for your desktop: switch 
+workspaces, focus windows, control volume/brightness/media,
 and launch apps.
 
 Vibecoded on a weekend because having a taskbar felt like too much. Expect rough edges.
@@ -21,7 +21,7 @@ Vibecoded on a weekend because having a taskbar felt like too much. Expect rough
 ### Setup
 
 ```bash
-git clone <this repo> hyprdeck
+git clone https://github.com/dud-eisme/hyprdeck hyprdeck
 cd hyprdeck
 python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
@@ -33,7 +33,8 @@ python3 -m venv venv
 ./venv/bin/python -u -m uvicorn server:app --host 0.0.0.0 --port 8765
 ```
 
-Then open `http://<your-pc-lan-ip>:8765` on your tablet.
+Then open `http://<your-pc-lan-ip>:8765` on your other device.
+You can check you pc lan ip by running `ip a` on your main machine
 
 ### Run on boot (systemd user service)
 
@@ -46,7 +47,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now hyprdeck.service
 ```
 
-Check it's alive:
+Check if it's alive:
 
 ```bash
 systemctl --user status hyprdeck.service
