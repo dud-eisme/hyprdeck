@@ -1,0 +1,13 @@
+[Unit]
+Description=Hyprland Deck server
+After=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/hyprdeck
+ExecStart=/opt/hyprdeck/venv/bin/python -u -m uvicorn server:app --host 0.0.0.0 --port 8765
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
