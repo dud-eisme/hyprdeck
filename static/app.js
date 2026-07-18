@@ -42,8 +42,10 @@ function buildTiles() {
     tile.className = 'ws-tile empty';
     tile.dataset.id = i;
     tile.textContent = i;
-    tile.addEventListener('click', () => {
-      post('/api/workspace', { id: i });
+    // pointerdown fires the instant a finger touches down, instead of
+    // waiting for the full tap+release+disambiguation that 'click' does
+    tile.addEventListener('pointerdown', () => {
+      send('workspace', { id: i });
     });
     wsGrid.appendChild(tile);
   }
@@ -227,12 +229,39 @@ function applyState(s) {
 
 // ---------- networking ----------
 
+// Fallback for when the socket isn't open yet/dropped - same REST
+// endpoints as before, used only if send() can't reach the socket.
 function post(path, body) {
   fetch(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body || {}),
   }).catch(() => { });
+}
+
+// Primary control path: send commands over the already-open websocket
+// instead of firing a brand new HTTP request per tap. This avoids paying
+// a fresh TCP+HTTP round trip for every single interaction - the socket
+// is already connected and warm, so this is just a single frame write.
+// REST_FALLBACK maps a websocket action back to its REST equivalent, only
+// used if the socket happens to be down when a control is used.
+const REST_FALLBACK = {
+  workspace: (p) => post('/api/workspace', { id: p.id }),
+  window_focus: (p) => post('/api/window/focus', { address: p.address }),
+  media: (p) => post(`/api/media/${p.action}`, {}),
+  volume: (p) => post('/api/volume', { level: p.level }),
+  volume_mute: () => post('/api/volume/mute', {}),
+  brightness: (p) => post('/api/brightness', { level: p.level }),
+  launch: (p) => post(`/api/launch/${p.name}`, {}),
+};
+
+function send(type, payload = {}) {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({ type, ...payload }));
+  } else {
+    const fallback = REST_FALLBACK[type];
+    if (fallback) fallback(payload);
+  }
 }
 
 function connect() {
@@ -245,7 +274,10 @@ function connect() {
 
   socket.addEventListener('message', (ev) => {
     const msg = JSON.parse(ev.data);
-    if (msg.type === 'state') applyState(msg.data);
+    if (msg.type === 'state') {
+      if (msg.sent_at) console.log('server->client latency ms:', Math.round((Date.now() / 1000 - msg.sent_at) * 1000));
+      applyState(msg.data);
+    }
   });
 
   socket.addEventListener('close', () => {
@@ -258,14 +290,14 @@ function connect() {
 
 // ---------- controls ----------
 
-playBtn.addEventListener('click', () => post('/api/media/play-pause'));
-prevBtn.addEventListener('click', () => post('/api/media/previous'));
-nextBtn.addEventListener('click', () => post('/api/media/next'));
-muteBtn.addEventListener('click', () => post('/api/volume/mute'));
+playBtn.addEventListener('pointerdown', () => send('media', { action: 'play-pause' }));
+prevBtn.addEventListener('pointerdown', () => send('media', { action: 'previous' }));
+nextBtn.addEventListener('pointerdown', () => send('media', { action: 'next' }));
+muteBtn.addEventListener('pointerdown', () => send('volume_mute'));
 
 document.querySelectorAll('.launch-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    post(`/api/launch/${btn.dataset.app}`, {});
+  btn.addEventListener('pointerdown', () => {
+    send('launch', { name: btn.dataset.app });
   });
 
   // if a given icon 404s (e.g. ghidra isn't in simple-icons), just hide
@@ -289,7 +321,10 @@ volSlider.addEventListener('input', () => {
   sliderDragging.vol = true;
   volValue.textContent = volSlider.value;
   clearTimeout(volDebounce);
-  volDebounce = setTimeout(() => post('/api/volume', { level: Number(volSlider.value) }), 30);
+  volDebounce = setTimeout(() => send('volume', { level: Number(volSlider.value) }), 30);
+});
+volSlider.addEventListener('change', () => {
+  sliderDragging.vol = false;
 });
 
 let brightDebounce;
@@ -297,7 +332,10 @@ brightSlider.addEventListener('input', () => {
   sliderDragging.bright = true;
   brightValue.textContent = brightSlider.value;
   clearTimeout(brightDebounce);
-  brightDebounce = setTimeout(() => post('/api/brightness', { level: Number(brightSlider.value) }), 30);
+  brightDebounce = setTimeout(() => send('brightness', { level: Number(brightSlider.value) }), 30);
+});
+brightSlider.addEventListener('change', () => {
+  sliderDragging.bright = false;
 });
 
 // ---------- clock ----------
