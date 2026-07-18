@@ -51,6 +51,18 @@ function buildTiles() {
   }
 }
 
+// Some apps/classes don't have a real brand logo on simple-icons (Ghidra,
+// virt-manager/KVM, and "cybersecurity" as a generic concept all 404 on
+// the CDN). Rather than reproduce those tools' actual trademarked logos,
+// these are small generic local icons instead - checked first, before
+// falling back to the simple-icons CDN for anything else.
+const LOCAL_ICONS = {
+  'ghidra': 'icons/ghidra.svg',
+  'virt-manager': 'icons/vm.svg',
+  'org.virt-manager.virt-manager': 'icons/vm.svg',
+  'cybersec': 'icons/shield.svg',
+};
+
 const iconMap = {
   // browsers
   'firefox': 'firefox',
@@ -94,6 +106,10 @@ const iconMap = {
   // file manager
   'org.kde.dolphin': 'kde',  // no dedicated Dolphin icon; falls back to KDE logo
   'dolphin': 'kde',
+
+  // custom terminal workspaces (see --class flag on the alacritty binds)
+  // icon handled via LOCAL_ICONS above (no matching brand logo on the CDN)
+  'github': 'github',
 
   // java runtime windows (if any app shows as this)
   'java': 'openjdk',
@@ -144,15 +160,20 @@ function updateTiles(workspaces, activeId) {
         // Map common Arch/Hyprland app classes to Simple Icons slugs
         const winClass = (win.class || 'sys').toLowerCase();
 
-        // Clean the class name to match expected Simple Icon slugs
-        const slug = resolveIconSlug(winClass, win.title);
-
         const img = document.createElement('img');
-        // Fetch the SVG logo from the jsDelivr CDN
-        img.src = `https://cdn.jsdelivr.net/npm/simple-icons@11/icons/${slug}.svg`;
         img.className = 'ws-icon';
 
-        // If the CDN doesn't have the icon (404 error), fallback to text
+        if (LOCAL_ICONS[winClass]) {
+          // known local icon (no real brand logo exists for this app)
+          img.src = LOCAL_ICONS[winClass];
+        } else {
+          // Clean the class name to match expected Simple Icon slugs
+          const slug = resolveIconSlug(winClass, win.title);
+          // Fetch the SVG logo from the jsDelivr CDN
+          img.src = `https://cdn.jsdelivr.net/npm/simple-icons@11/icons/${slug}.svg`;
+        }
+
+        // If the icon 404s (e.g. a CDN slug that doesn't exist), fallback to text
         img.onerror = () => {
           img.style.display = 'none';
           winEl.textContent = (win.class || 'sys').substring(0, 4).toLowerCase();
@@ -274,10 +295,7 @@ function connect() {
 
   socket.addEventListener('message', (ev) => {
     const msg = JSON.parse(ev.data);
-    if (msg.type === 'state') {
-      if (msg.sent_at) console.log('server->client latency ms:', Math.round((Date.now() / 1000 - msg.sent_at) * 1000));
-      applyState(msg.data);
-    }
+    if (msg.type === 'state') applyState(msg.data);
   });
 
   socket.addEventListener('close', () => {

@@ -16,6 +16,36 @@
   --radius: 6px;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+*, *:focus, *:active {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  outline: none;
+}
+
+/* Android/touch browsers draw a focus outline on the last-tapped element
+   and never clear it (no mouse to click elsewhere and blur it), so every
+   button/tile/slider ends up with a lingering ring after a tap. This is a
+   touch-only control panel, not a form people tab through with a
+   keyboard, so it's safe to just remove focus indicators entirely.
+   Some older/custom Android WebViews (a) ignore the `transparent` keyword
+   for -webkit-tap-highlight-color and need an explicit rgba(0,0,0,0)
+   instead, and (b) draw the focus ring via box-shadow rather than
+   outline on certain elements (range input thumbs especially) - so both
+   are reset here, not just outline. */
+button, input, .ws-tile, .btn, .launch-btn, .conn, .slider {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+button:focus, input:focus, .ws-tile:focus, .btn:focus, .launch-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--accent) !important; /* keep the intentional ring we already draw, drop any browser-added one */
+}
+button::-moz-focus-inner {
+  border: 0;
+}
 html, body {
   height: 100%;
   margin: 0;
@@ -27,13 +57,7 @@ html, body {
   -webkit-user-select: none;
 }
 body {
-  background-image:
-    linear-gradient(var(--panel-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--panel-border) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: -1px -1px;
   background-color: var(--bg);
-  opacity: 1;
 }
 .frame {
   height: 100%;
