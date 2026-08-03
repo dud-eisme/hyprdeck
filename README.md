@@ -10,7 +10,7 @@ and launch apps.
 
 Yes it works on every new browser
 
-Vibecoded on a weekend because having a taskbar felt like too much. Expect rough edges.
+Built over a weekend because having a taskbar felt like too much. Expect rough edges.
 
 ## Usage
 

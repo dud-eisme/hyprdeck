@@ -51,13 +51,13 @@ function buildTiles() {
   }
 }
 
-// Some apps/classes don't have a real brand logo on simple-icons (Ghidra,
-// virt-manager/KVM, and "cybersecurity" as a generic concept all 404 on
-// the CDN). Rather than reproduce those tools' actual trademarked logos,
+// Some apps/classes don't have a real brand logo on simple-icons (Binary
+// Ninja, virt-manager/KVM, and "cybersecurity" as a generic concept all 404
+// on the CDN). Rather than reproduce those tools' actual trademarked logos,
 // these are small generic local icons instead - checked first, before
 // falling back to the simple-icons CDN for anything else.
 const LOCAL_ICONS = {
-  'ghidra': 'icons/ghidra.svg',
+  'binaryninja': 'icons/binaryninja.svg',
   'virt-manager': 'icons/vm.svg',
   'org.virt-manager.virt-manager': 'icons/vm.svg',
   'cybersec': 'icons/shield.svg',
@@ -87,7 +87,6 @@ const iconMap = {
 
   // dev tools
   'code': 'visualstudiocode',
-  'ghidra': 'ghidra',        // verify — may not exist in simple-icons@11
   'cmake': 'cmake',
   'neovim': 'neovim',
   'nvim': 'neovim',
@@ -318,7 +317,7 @@ document.querySelectorAll('.launch-btn').forEach(btn => {
     send('launch', { name: btn.dataset.app });
   });
 
-  // if a given icon 404s (e.g. ghidra isn't in simple-icons), just hide
+  // if a given icon 404s (e.g. binja isn't in simple-icons), just hide
   // the broken image and keep the text label so the button still works
   const img = btn.querySelector('img');
   if (img) {
