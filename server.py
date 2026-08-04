@@ -422,7 +422,8 @@ async def do_set_brightness(level: int):
 
 LAUNCH_APPS = {
     "wireshark": ["wireshark"],
-    "binja": ["binaryninja"],  # adjust if your install uses a different launch command
+    "binja": ["~/Workspace/CyberSec/Tools/BinaryNinja/binaryninja"],
+    "ghidra": ["ghidra"],
     "audacity": ["audacity"],
     "virt-manager": ["virt-manager"],
     "filemanager": ["dolphin"],  # swap the binary if you use a different file manager
